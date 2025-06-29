@@ -16,7 +16,7 @@
     "scss",
     "components"
   ],
-  "author": "Your Name",
+  "author": "Lưu Công Quang Vũ",
   "license": "MIT",
   "dependencies": {
     "sass": "^1.69.0"
@@ -36,10 +36,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/rollup-plugin-shopify-components.git"
+    "url": "https://github.com/vuluu2k/rollup-plugin-shopify-components.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/rollup-plugin-shopify-components/issues"
+    "url": "https://github.com/vuluu2k/rollup-plugin-shopify-components/issues"
   },
-  "homepage": "https://github.com/yourusername/rollup-plugin-shopify-components#readme"
+  "homepage": "https://github.com/vuluu2k/rollup-plugin-shopify-components#readme"
 }

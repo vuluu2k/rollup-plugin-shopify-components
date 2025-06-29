@@ -1,5 +1,5 @@
 import { defineConfig } from 'rollup';
-import shopifyComponentsPlugin from '../rollup-plugin-shopify-components.js';
+import shopifyComponentsPlugin from 'rollup-plugin-shopify-components';
 
 export default defineConfig({
   input: 'src/index.js',

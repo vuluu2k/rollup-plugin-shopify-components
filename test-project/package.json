@@ -8,6 +8,9 @@
     "watch": "rollup -c --watch",
     "dev": "rollup -c --watch"
   },
+  "dependencies": {
+    "rollup-plugin-shopify-components": "^1.0.0"
+  },
   "devDependencies": {
     "rollup": "^3.0.0",
     "sass": "^1.69.0"
