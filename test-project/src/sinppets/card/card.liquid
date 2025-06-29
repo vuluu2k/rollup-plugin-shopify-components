@@ -1,0 +1,19 @@
+{% comment %}
+  card component
+  Usage: {% render 'card', param1: 'value' %}
+{% endcomment %}
+
+{%- liquid
+  assign param1 = param1 | default: 'default_value'
+-%}
+
+<div class="card card--{{ param1 }}">
+  <!-- card component content -->
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+  <span class="card__text">card Component</span>
+</div>

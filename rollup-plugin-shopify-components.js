@@ -105,6 +105,11 @@ class ComponentBuilder {
         const relativePath = path.relative(this.srcDir, componentDir);
         const cssFileName = relativePath ? `${relativePath.replace(/[\/\\]/g, '-')}-${componentName}.css` : `${componentName}.css`;
         const cssFile = path.join(this.assetsDir, cssFileName);
+        // Ensure the assets directory exists
+        const cssDir = path.dirname(cssFile);
+        if (!fs.existsSync(cssDir)) {
+          fs.mkdirSync(cssDir, { recursive: true });
+        }
         fs.writeFileSync(cssFile, cssContent);
         console.log(`  ✅ Generated CSS: ${cssFileName}`);
         

@@ -1,0 +1,19 @@
+/* Hero Component Styles */
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-background);
+}
+
+.hero__title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}

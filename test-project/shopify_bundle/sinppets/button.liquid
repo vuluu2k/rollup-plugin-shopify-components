@@ -1,0 +1,212 @@
+{% comment %}
+  Button Component
+  A reusable button component with various styles and states
+{% endcomment %}
+
+{% stylesheet %}
+/* Button Component Styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+.button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+.button:active {
+  transform: translateY(0);
+}
+.button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Button Styles */
+.button--primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+.button--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.button--secondary:hover {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.button--outline {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.button--outline:hover {
+  background: var(--color-background-hover);
+  border-color: var(--color-border-hover);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--color-text);
+}
+.button--ghost:hover {
+  background: var(--color-background-hover);
+}
+
+/* Button Sizes */
+.button--small {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+.button--medium {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+}
+
+.button--large {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+/* Button States */
+.button--full-width {
+  width: 100%;
+}
+
+.button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.button--disabled:hover {
+  transform: none;
+}
+
+/* Button Icons */
+.button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+.button__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.button__icon--left {
+  order: -1;
+}
+
+.button__icon--right {
+  order: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+  .button--large {
+    padding: 0.875rem 1.75rem;
+    font-size: 0.9375rem;
+  }
+}{% endstylesheet %}
+
+{% comment %}
+  Button component
+  Usage: {% render 'button', text: 'Click me', url: '/link', style: 'primary' %}
+{% endcomment %}
+
+{%- liquid
+  assign button_text = text | default: 'Button'
+  assign button_url = url | default: '#'
+  assign button_style = style | default: 'primary'
+  assign button_size = size | default: 'medium'
+  assign button_full_width = full_width | default: false
+  assign button_disabled = disabled | default: false
+  assign button_icon = icon | default: ''
+  assign button_icon_position = icon_position | default: 'left'
+-%}
+
+<a 
+  href="{{ button_url }}" 
+  class="button button--{{ button_style }} button--{{ button_size }}{% if button_full_width %} button--full-width{% endif %}{% if button_disabled %} button--disabled{% endif %}"
+  {% if button_disabled %}aria-disabled="true"{% endif %}
+  {% if button_url == '#' %}onclick="return false;"{% endif %}
+>
+  {% if button_icon != '' and button_icon_position == 'left' %}
+    <span class="button__icon button__icon--left">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+  
+  <span class="button__text">{{ button_text }}</span>
+  
+  {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+
+   {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+
+    {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+
+   {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+
+   {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+
+   {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+</a>
+
+
+{% schema %}
+{
+  "name": "Button",
+  "tag": "div",
+  "class": "button",
+  "settings": []
+}
+{% endschema %}

@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-shopify-components",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rollup plugin for building Shopify theme components with automatic SCSS compilation and schema generation",
   "main": "rollup-plugin-shopify-components.js",
   "type": "module",
@@ -42,4 +42,4 @@
     "url": "https://github.com/yourusername/rollup-plugin-shopify-components/issues"
   },
   "homepage": "https://github.com/yourusername/rollup-plugin-shopify-components#readme"
-} 
+}

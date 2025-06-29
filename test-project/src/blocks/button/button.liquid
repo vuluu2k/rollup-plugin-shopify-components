@@ -1,0 +1,36 @@
+{% comment %}
+  Button component
+  Usage: {% render 'button', text: 'Click me', url: '/link', style: 'primary' %}
+{% endcomment %}
+
+{%- liquid
+  assign button_text = text | default: 'Button'
+  assign button_url = url | default: '#'
+  assign button_style = style | default: 'primary'
+  assign button_size = size | default: 'medium'
+  assign button_full_width = full_width | default: false
+  assign button_disabled = disabled | default: false
+  assign button_icon = icon | default: ''
+  assign button_icon_position = icon_position | default: 'left'
+-%}
+
+<a 
+  href="{{ button_url }}" 
+  class="button button--{{ button_style }} button--{{ button_size }}{% if button_full_width %} button--full-width{% endif %}{% if button_disabled %} button--disabled{% endif %}"
+  {% if button_disabled %}aria-disabled="true"{% endif %}
+  {% if button_url == '#' %}onclick="return false;"{% endif %}
+>
+  {% if button_icon != '' and button_icon_position == 'left' %}
+    <span class="button__icon button__icon--left">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+  
+  <span class="button__text">{{ button_text }}</span>
+  
+  {% if button_icon != '' and button_icon_position == 'right' %}
+    <span class="button__icon button__icon--right">
+      {% render 'icon', icon: button_icon %}
+    </span>
+  {% endif %}
+</a>

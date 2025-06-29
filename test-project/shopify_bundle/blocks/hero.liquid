@@ -1,0 +1,49 @@
+{% comment %}
+  Hero Component
+  A hero banner component with title and subtitle
+{% endcomment %}
+
+{% stylesheet %}
+/* Hero Component Styles */
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-background);
+}
+
+.hero__title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}{% endstylesheet %}
+
+{% comment %}
+  Hero component
+  Usage: {% render 'hero', title: 'Welcome', subtitle: 'Learn more' %}
+{% endcomment %}
+
+{%- liquid
+  assign hero_title = title | default: 'Hero Title'
+  assign hero_subtitle = subtitle | default: 'Hero Subtitle'
+-%}
+
+<div class="hero">
+  <h1 class="hero__title">{{ hero_title }}</h1>
+  <p class="hero__subtitle">{{ hero_subtitle }}</p>
+</div> 
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "div",
+  "class": "hero",
+  "settings": []
+}
+{% endschema %}

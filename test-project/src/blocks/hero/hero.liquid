@@ -1,0 +1,14 @@
+{% comment %}
+  Hero component
+  Usage: {% render 'hero', title: 'Welcome', subtitle: 'Learn more' %}
+{% endcomment %}
+
+{%- liquid
+  assign hero_title = title | default: 'Hero Title'
+  assign hero_subtitle = subtitle | default: 'Hero Subtitle'
+-%}
+
+<div class="hero">
+  <h1 class="hero__title">{{ hero_title }}</h1>
+  <p class="hero__subtitle">{{ hero_subtitle }}</p>
+</div> 
