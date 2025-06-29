@@ -1,0 +1,45 @@
+{
+  "name": "rollup-plugin-shopify-components",
+  "version": "1.0.0",
+  "description": "Rollup plugin for building Shopify theme components with automatic SCSS compilation and schema generation",
+  "main": "rollup-plugin-shopify-components.js",
+  "type": "module",
+  "exports": {
+    ".": "./rollup-plugin-shopify-components.js"
+  },
+  "keywords": [
+    "rollup",
+    "rollup-plugin",
+    "shopify",
+    "theme",
+    "liquid",
+    "scss",
+    "components"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "sass": "^1.69.0"
+  },
+  "peerDependencies": {
+    "rollup": "^3.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-replace": "^5.0.0",
+    "rollup": "^3.0.0"
+  },
+  "files": [
+    "rollup-plugin-shopify-components.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/rollup-plugin-shopify-components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/rollup-plugin-shopify-components/issues"
+  },
+  "homepage": "https://github.com/yourusername/rollup-plugin-shopify-components#readme"
+} 

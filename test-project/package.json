@@ -1,0 +1,15 @@
+{
+  "name": "test-shopify-components",
+  "version": "1.0.0",
+  "description": "Test project for rollup-plugin-shopify-components",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c --watch",
+    "dev": "rollup -c --watch"
+  },
+  "devDependencies": {
+    "rollup": "^3.0.0",
+    "sass": "^1.69.0"
+  }
+} 
