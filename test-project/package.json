@@ -4,9 +4,7 @@
   "description": "Test project for rollup-plugin-shopify-components",
   "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c --watch",
-    "dev": "rollup -c --watch"
+    "build": "rollup -c"
   },
   "dependencies": {
     "rollup-plugin-shopify-components": "^1.0.0"

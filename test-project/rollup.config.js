@@ -17,10 +17,4 @@ export default defineConfig({
       debounceDelay: 100
     })
   ],
-  watch: {
-    include: 'src/**/*.js',
-    exclude: 'node_modules/**',
-    buildDelay: 100,
-    clearScreen: false
-  }
 }); 
