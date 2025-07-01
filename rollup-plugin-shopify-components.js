@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import sass from 'sass';
+import * as sass from 'sass';
+import { createScript } from 'vm';
 
 /**
  * Component Builder Class
@@ -36,65 +37,45 @@ class ComponentBuilder {
     }
   }
 
-  async buildComponentsFlat(srcPath, snippetsDir) {
+  async buildComponentsFlat(srcPath, outputDir) {
     if (!fs.existsSync(srcPath)) return;
     const items = fs.readdirSync(srcPath, { withFileTypes: true });
     for (const item of items) {
       const itemPath = path.join(srcPath, item.name);
       if (item.isDirectory()) {
-        // Nếu trong folder có file trùng tên với folder (.liquid), bundle ra snippets
-        const componentLiquid = path.join(itemPath, `${item.name}.liquid`);
-        if (fs.existsSync(componentLiquid)) {
-          await this.buildComponent(item.name, itemPath, snippetsDir);
-        }
-        // Đệ quy tiếp cho các thư mục con
-        await this.buildComponentsFlat(itemPath, snippetsDir);
+        // const componentLiquid = path.join(itemPath, `${item.name}.liquid`);
+        // if (fs.existsSync(componentLiquid)) {
+        //   await this.buildComponent(item.name, itemPath, outputDir);
+        // }
+        await this.buildComponentsFlat(itemPath, outputDir);
       }
-      // Nếu là file .liquid ở root src, cũng bundle ra snippets
       else if (item.isFile() && item.name.endsWith('.liquid')) {
-        const base = path.basename(item.name, '.liquid');
-        await this.buildComponent(base, srcPath, snippetsDir);
+        const base = path.basename(srcPath);
+        await this.buildComponent(base, srcPath, outputDir);
       }
     }
   }
 
   async buildComponent(componentName, componentDir, outputDir) {
-    const liquidFile = path.join(componentDir, `${componentName}.liquid`);
-    const scssFile = path.join(componentDir, `${componentName}.global.scss`);
-    const schemaFile = path.join(componentDir, 'schema.js');
+    const files = fs.readdirSync(componentDir);
+    const liquidFile = files.find(file => file.endsWith('.liquid'));
+    const scssFile = files.find(file => file.endsWith('.scss'));
+    const schemaFile = files.find(file => file === 'schema.js');
     
     console.log(`📦 Building component: ${componentName} (from ${path.relative(this.srcDir, componentDir)})`);
     
     let liquidContent = '';
-    
-    // Add component documentation
-    liquidContent += `{% comment %}\n`;
-    liquidContent += `  ${componentName.charAt(0).toUpperCase() + componentName.slice(1)} Component\n`;
-    
-    // Process schema for documentation
-    if (fs.existsSync(schemaFile)) {
-      try {
-        const schemaContent = fs.readFileSync(schemaFile, 'utf8');
-        
-        // Extract description for comment
-        const descriptionMatch = schemaContent.match(/description:\s*['"]([^'"]+)['"]/);
-        if (descriptionMatch) {
-          liquidContent += `  ${descriptionMatch[1]}\n`;
-        }
-        
-        console.log(`  📋 Schema processed for ${componentName}`);
-        
-      } catch (e) {
-        console.warn(`⚠️  Could not process schema for ${componentName}:`, e.message);
-      }
+
+    // Add liquid template
+    if (liquidFile) {
+      const templateContent = fs.readFileSync(path.join(componentDir, liquidFile), 'utf8');
+      liquidContent += templateContent;
     }
     
-    liquidContent += `{% endcomment %}\n\n`;
-    
     // Add stylesheet if SCSS exists
-    if (fs.existsSync(scssFile)) {
+    if (scssFile) {
       try {
-        const scssContent = fs.readFileSync(scssFile, 'utf8');
+        const scssContent = fs.readFileSync(path.join(componentDir, scssFile), 'utf8');
         const cssContent = this.processSCSS(scssContent, componentName);
         
         liquidContent += `{% stylesheet %}\n`;
@@ -118,20 +99,34 @@ class ComponentBuilder {
       }
     }
     
-    // Add liquid template
-    if (fs.existsSync(liquidFile)) {
-      const templateContent = fs.readFileSync(liquidFile, 'utf8');
-      liquidContent += templateContent;
-    }
-    
     // Add schema block at the end if schema file exists
-    if (fs.existsSync(schemaFile)) {
+    if (schemaFile) {
       try {
-        const schemaContent = fs.readFileSync(schemaFile, 'utf8');
-        const shopifySchema = this.convertToShopifySchema(schemaContent, componentName);
+        const schemaContent = fs.readFileSync(path.join(componentDir, schemaFile), 'utf8');
+      
+        const script = createScript(schemaContent);
+        const exports = {};
+        const module = { exports };
+        
+        const sandbox = {
+          module,
+          exports,
+          require: (name) => {
+            try {
+              return require(name);
+            } catch (e) {
+              console.warn(`⚠️  Could not require ${name}:`, e.message);
+              return null;
+            }
+          }
+        };
+        
+        script.runInNewContext(sandbox);
+        const schema = module.exports;
+        const finalSchema = typeof schema === 'function' ? schema() : schema;
         
         liquidContent += `\n\n{% schema %}\n`;
-        liquidContent += `${JSON.stringify(shopifySchema, null, 2)}\n`;
+        liquidContent += `${JSON.stringify(finalSchema, null, 2)}\n`;
         liquidContent += `{% endschema %}\n`;
         
         console.log(`  📋 Schema block added for ${componentName}`);
@@ -181,99 +176,6 @@ class ComponentBuilder {
     }
   }
 
-  convertToShopifySchema(schemaContent, componentName) {
-    try {
-      // Extract schema object using regex
-      const schemaMatch = schemaContent.match(/const\s+\w+Schema\s*=\s*(\{[\s\S]*?\});/);
-      if (!schemaMatch) {
-        throw new Error('Could not extract schema object');
-      }
-      
-      // Parse the JavaScript object (simple approach)
-      const schemaStr = schemaMatch[1];
-      
-      // Convert to Shopify schema format
-      const shopifySchema = {
-        name: componentName.charAt(0).toUpperCase() + componentName.slice(1),
-        tag: 'div',
-        class: componentName,
-        settings: []
-      };
-      
-      // Extract properties and convert to Shopify settings
-      const propertiesMatch = schemaStr.match(/properties:\s*\{([\s\S]*?)\n\s*\},/);
-      if (propertiesMatch) {
-        const propertiesText = propertiesMatch[1];
-        const propertyRegex = /(\w+):\s*\{([\s\S]*?)\}/g;
-        let propertyMatch;
-        
-        while ((propertyMatch = propertyRegex.exec(propertiesText)) !== null) {
-          const propertyName = propertyMatch[1];
-          const propertyContent = propertyMatch[2];
-          
-          const descMatch = propertyContent.match(/description:\s*['"]([^'"]+)['"]/);
-          const typeMatch = propertyContent.match(/type:\s*['"]([^'"]+)['"]/);
-          const defaultMatch = propertyContent.match(/default:\s*([^,\n]+)/);
-          const enumMatch = propertyContent.match(/enum:\s*\[([^\]]+)\]/);
-          
-          if (descMatch) {
-            const setting = {
-              type: this.mapTypeToShopify(typeMatch ? typeMatch[1] : 'string'),
-              id: propertyName,
-              label: descMatch[1],
-              default: defaultMatch ? this.parseDefaultValue(defaultMatch[1]) : undefined
-            };
-            
-            // Add options for enum types
-            if (enumMatch) {
-              const options = enumMatch[1].split(',').map(opt => {
-                const cleanOpt = opt.trim().replace(/['"]/g, '');
-                return {
-                  value: cleanOpt,
-                  label: cleanOpt.charAt(0).toUpperCase() + cleanOpt.slice(1)
-                };
-              });
-              setting.options = options;
-            }
-            
-            shopifySchema.settings.push(setting);
-          }
-        }
-      }
-      
-      return shopifySchema;
-      
-    } catch (error) {
-      console.warn(`⚠️  Could not convert schema for ${componentName}:`, error.message);
-      
-      // Return a basic schema as fallback
-      return {
-        name: componentName.charAt(0).toUpperCase() + componentName.slice(1),
-        tag: 'div',
-        class: componentName,
-        settings: []
-      };
-    }
-  }
-  
-  mapTypeToShopify(jsType) {
-    const typeMap = {
-      'string': 'text',
-      'number': 'number',
-      'boolean': 'checkbox',
-      'array': 'select'
-    };
-    return typeMap[jsType] || 'text';
-  }
-  
-  parseDefaultValue(value) {
-    const cleanValue = value.trim().replace(/['"]/g, '');
-    if (cleanValue === 'true') return true;
-    if (cleanValue === 'false') return false;
-    if (!isNaN(cleanValue)) return Number(cleanValue);
-    return cleanValue;
-  }
-
   // Rebuild specific component
   async rebuildComponent(changedFile) {
     const relativePath = path.relative(this.srcDir, changedFile);
@@ -290,25 +192,11 @@ class ComponentBuilder {
       componentDir = this.srcDir;
       outputDir = this.outputDir; // Output vào snippets root
     } else {
-      // File trong thư mục con (ví dụ: src/button/button.liquid)
-      const fileName = path.basename(changedFile, path.extname(changedFile));
       const parentDir = pathParts[pathParts.length - 2]; // Thư mục cha
-      
-      // Nếu tên file trùng với tên thư mục cha, đó là component
-      if (fileName === parentDir) {
-        componentName = parentDir;
-        componentDir = path.dirname(changedFile);
-        // Tìm output directory tương ứng với thư mục gốc chứa component
-        const rootComponentDir = pathParts[0]; // Thư mục gốc đầu tiên
-        outputDir = path.join(this.outputDir, rootComponentDir);
-      } else {
-        // Nếu không trùng, lấy tên file làm component
-        componentName = fileName;
-        componentDir = path.dirname(changedFile);
-        // Tìm output directory tương ứng với thư mục gốc chứa component
-        const rootComponentDir = pathParts[0]; // Thư mục gốc đầu tiên
-        outputDir = path.join(this.outputDir, rootComponentDir);
-      }
+      componentName = parentDir
+      componentDir = path.dirname(changedFile);
+      const rootComponentDir = pathParts[0];
+      outputDir = path.join(this.outputDir, rootComponentDir);
     }
     
     console.log(`🔄 Rebuilding component: ${componentName} (file changed: ${relativePath})`);

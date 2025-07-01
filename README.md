@@ -5,7 +5,7 @@ A Rollup plugin for building Shopify theme components with automatic SCSS compil
 ## Features
 
 - 🔧 **Automatic Component Building**: Scans your `src/` directory and builds Shopify components
-- 🎨 **SCSS Compilation**: Automatically compiles `.global.scss` files to CSS
+- 🎨 **SCSS Compilation**: Automatically compiles `.scss` files to CSS
 - 📋 **Schema Generation**: Converts JavaScript schema files to Shopify schema format
 - 👀 **File Watching**: Watches for changes and rebuilds components automatically
 - 🚀 **Debounced Rebuilds**: Prevents multiple rapid rebuilds when saving files
@@ -196,9 +196,6 @@ This will be converted to Shopify schema format:
 ```bash
 # Build once
 rollup -c
-
-# Build and watch for changes
-rollup -c --watch
 ```
 
 ### File Watching
